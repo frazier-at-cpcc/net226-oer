@@ -21,10 +21,11 @@ This textbook supports an 8-week asynchronous online course aligned to the Cisco
 | 7. Infrastructure as Code with Ansible | IaC, agentless automation, playbooks, automated validation | Ansible, cisco.ios, Jinja2, pyATS/Genie, Idempotency |
 | 8. Model-Driven Programmability & Capstone | YANG modeling, NETCONF, RESTCONF, controller APIs, ChatOps | YANG, NETCONF (ncclient), RESTCONF, DNA Center, Webex |
 
-## Manifests
+## Architecture & Production Assets
 
-* : Complete specifications and generative prompts for all 51 textbook diagrams.
-* : Curriculum specification for the 32 bespoke instructional videos embedded across the 8 chapters.
+* [`graphics-manifest.md`](graphics-manifest.md): Complete specifications and generative prompts for all 51 textbook diagrams and architecture illustrations.
+* [`video-manifest.md`](video-manifest.md): Complete curriculum specification for the 32 bespoke instructional videos embedded across the 8 chapters.
+* [`video-designs/`](video-designs/): State-of-the-art production design documents for all 32 videos, utilizing HyperFrames and CodeVideo engines with scene-by-scene timing, animations, and verbatim scripts.
 
 ## License
 
