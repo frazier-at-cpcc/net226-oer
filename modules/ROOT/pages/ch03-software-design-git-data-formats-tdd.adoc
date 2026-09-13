@@ -1,0 +1,144 @@
+= Chapter 3: Modern Software Practices: Design Patterns, Version Control, Data Formats, and TDD
+
+== Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+. Apply software architectural design patterns (MVC, Observer, Singleton) to structure maintainable network automation applications.
+. Execute professional Git workflows—including branching, staging, committing, diffing, pull requests, and merge conflict resolution.
+. Compare the structural syntax, encoding rules, and operational trade-offs of XML, JSON, and YAML.
+. Serialize and parse JSON, YAML, and XML documents into Python data structures using native and third-party libraries.
+. Construct automated unit tests with Python's `unittest` library to validate normal, boundary, and error scenarios.
+
+== 3.1 Introduction: The Spaghetti Script Catastrophe
+
+An operations engineer writes a 1,200-line monolithic script named `audit_all_switches_v2.py`. It has zero modular functions, hardcoded IP addresses, and no version control. When an unexpected exception occurs, the script terminates halfway through reconfiguring 80 distribution switches, leaving the campus network split between two incompatible MTU settings.
+
+Building mission-critical network automation requires professional software engineering disciplines: clean architectural patterns, disciplined Git version control, structured data formats, and automated unit testing.
+
+.Video 3.1: Software Design Patterns in Network Automation: The MVC Architecture
+[video, width=800, height=450]
+video::v3-1-mvc-patterns.mp4[poster=v3-1-poster.png, captions=v3-1-captions.vtt]
+
+Here is the roadmap for Chapter 3:
+
+* **Section 3.2** applies the Model-View-Controller pattern to network scripting.
+* **Section 3.3 and 3.4** master Git local operations, feature branching, pull requests, and conflict resolution.
+* **Section 3.5 and 3.6** compare XML, JSON, and YAML and demonstrate Python parsing.
+* **Section 3.7** establishes Test-Driven Development using Python `unittest`.
+* **Sections 3.8 and 3.9** connect directly to hands-on Git labs and Project Milestone 2.
+
+== 3.2 Software Design Patterns for Network Engineering
+
+image::ch03/g3-1-mvc-network-automation.png[Model-View-Controller Applied to Network Automation]
+
+In network automation, the **Model-View-Controller (MVC)** pattern decouples data from presentation:
+* **Model:** Python classes and data structures representing network inventory and interface state.
+* **View:** Formatters that render data into human CLI tables, HTML reports, or Webex alert cards.
+* **Controller:** Orchestration logic parsing CLI arguments, querying devices, and updating views.
+
+== 3.3 Mastering Git for Network Engineers
+
+Git provides an indelible audit trail of all infrastructure code changes.
+
+.Video 3.2: Git for Network Engineers: Branching, Commits, and Merge Conflict Resolution
+[video, width=800, height=450]
+video::v3-2-git-for-networks.mp4[poster=v3-2-poster.png, captions=v3-2-captions.vtt]
+
+image::ch03/g3-2-git-three-trees.png[Git Three-Tier Architecture: Working Directory, Staging, and Repository]
+
+image::ch03/g3-3-git-feature-branch-workflow.png[Git Feature Branching and Pull Request Lifecycle]
+
+=== The Golden Rule: Never Commit to Main
+Always create a feature branch before developing new automation:
+[source,bash]
+----
+git checkout -b feature/vlan-audit
+----
+
+image::ch03/g3-4-merge-conflict-anatomy.png[Anatomy of a Git Merge Conflict]
+
+== 3.4 Data Formats: XML, JSON, and YAML
+
+Network APIs exchange data in structured serialization formats rather than unformatted CLI text.
+
+.Video 3.3: The Data Serialization Rosetta Stone: XML, JSON, and YAML Demystified
+[video, width=800, height=450]
+video::v3-3-data-serialization-rosetta.mp4[poster=v3-3-poster.png, captions=v3-3-captions.vtt]
+
+image::ch03/g3-5-data-formats-comparison.png[Rosetta Stone: Network Interface in JSON, YAML, and XML]
+
+=== Parsing Formats in Python
+
+[source,python]
+----
+import json, yaml, xmltodict
+
+# JSON parsing
+json_data = json.loads('{"interface": "GigabitEthernet1", "enabled": true}')
+
+# YAML parsing
+yaml_data = yaml.safe_load("interface: GigabitEthernet1\nenabled: true")
+
+# XML parsing
+xml_data = xmltodict.parse("<interface><name>GigabitEthernet1</name></interface>")
+----
+
+== 3.5 Unit Testing and Test-Driven Development (TDD)
+
+Test-driven development ensures network scripts handle malformed data and transport failures gracefully before touching physical hardware.
+
+.Video 3.4: Test-Driven Development (TDD) for Network Scripts with Python unittest
+[video, width=800, height=450]
+video::v3-4-tdd-unittest.mp4[poster=v3-4-poster.png, captions=v3-4-captions.vtt]
+
+image::ch03/g3-6-tdd-cycle.png[Test-Driven Development Red-Green-Refactor Cycle]
+
+image::ch03/g3-7-test-pyramid-networking.png[The Testing Pyramid for Network Automation]
+
+[source,python]
+----
+import unittest
+
+def parse_vlan_id(vlan_str: str) -> int:
+    try:
+        vid = int(vlan_str)
+        if 1 <= vid <= 4094:
+            return vid
+        raise ValueError("VLAN ID out of range")
+    except (TypeError, ValueError) as err:
+        raise ValueError(f"Invalid VLAN: {err}") from err
+
+class TestVlanParser(unittest.TestCase):
+    def test_valid_vlan(self):
+        self.assertEqual(parse_vlan_id("100"), 100)
+
+    def test_out_of_range_vlan(self):
+        with self.assertRaises(ValueError):
+            parse_vlan_id("5000")
+----
+
+== 3.6 Hands-On Connection: Git & Parsing Labs
+
+* **Lab 3.3.3:** Performing Git branching, commits, and merge conflict resolution.
+* **Lab 3.4.4:** Parsing sample device configurations in JSON, YAML, and XML into Python dictionaries.
+* **Lab 3.6.3:** Writing automated unit tests for network subnet calculations.
+
+== 3.7 Assessment Preparation: Project Milestone 2
+
+* **Milestone 2 Deliverables:**
+  1. Personal Git repository initialized with clean feature branch commit history.
+  2. Modular Python script using MVC principles to parse network configuration data.
+  3. Passing `unittest` test suite covering normal, boundary, and error cases.
+  4. Evidence of a Pull Request with self-review comments.
+* **Module 3 Exam:** Software design patterns, Git operations, data formats, and testing.
+
+== 3.8 Key Terms
+
+pull request (PR):: A proposed set of changes submitted to a repository for peer review prior to merging into a mainline branch.
+serialization:: Converting in-memory data structures into a standardized text representation for storage or network transmission.
+TDD:: A programming discipline where automated tests are authored before writing the functional code.
+
+== 3.9 Chapter Summary
+
+This chapter established essential software design patterns, Git version control workflows, data format comparisons, and automated unit testing. In xref:ch04-rest-apis-and-secure-integration.adoc[Chapter 4], you will connect your tested Python modules to live network platforms using REST APIs and secure HTTP methods.

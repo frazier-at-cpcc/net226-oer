@@ -1,0 +1,130 @@
+= Chapter 6: Application Deployment, Continuous Integration, and Security
+
+== Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+. Compare application deployment architectures—bare metal, virtual machines, containers, and cloud delivery models (IaaS, PaaS, SaaS, Edge).
+. Author, build, and optimize multi-stage Dockerfiles and manage container lifecycles, port mappings, and volume mounts.
+. Configure a Continuous Integration (CI) pipeline that triggers automated test execution upon every repository push.
+. Implement secrets management, secure credential handling, and encrypted data transport in compliance with industry standards.
+. Identify OWASP Top 10 web application security vulnerabilities (SQL Injection, XSS, Broken Authentication, CSRF) and design mitigations.
+
+== 6.1 Introduction: "It Worked on My Laptop"
+
+An engineer develops an interface audit script on their workstation. When copied to a production jump host to run as a nightly cron job, it fails immediately because the server runs Python 3.6 instead of 3.10, lacks required libraries, and has different SSL cipher suites.
+
+Packaging applications into immutable, lightweight Docker containers and running automated tests in Continuous Integration (CI) pipelines eliminates environment discrepancies and guarantees predictable deployment.
+
+.Video 6.1: Deployment Evolution: Bare Metal to Virtual Machines to Docker Containers
+[video, width=800, height=450]
+video::v6-1-deployment-evolution.mp4[poster=v6-1-poster.png, captions=v6-1-captions.vtt]
+
+Here is the roadmap for Chapter 6:
+
+* **Section 6.2** compares bare metal, virtual machines, containers, and cloud models.
+* **Section 6.3** covers Docker container architecture and Dockerfile optimization.
+* **Section 6.4** builds an automated CI/CD pipeline using GitHub Actions.
+* **Section 6.5 and 6.6** cover application security, secrets vaults, and OWASP Top 10 defenses.
+* **Sections 6.7 and 6.8** connect directly to the container lab and Project Milestone 4.
+
+== 6.2 Deployment Models: From Metal to Containers
+
+image::ch06/g6-1-deployment-models-spectrum.png[Deployment Spectrum: Bare Metal, VMs, Containers, and Edge]
+
+* **Bare Metal:** Single OS tied to hardware; low density, slow provisioning.
+* **Virtual Machines:** Hypervisor virtualizes hardware; runs complete guest operating systems; strong isolation but high memory overhead.
+* **Containers:** Share the host Linux kernel; isolate processes and filesystems via Linux namespaces and cgroups; instant startup and minimal footprint.
+
+== 6.3 Containerizing Network Automation with Docker
+
+.Video 6.2: Containerizing Network Automation: Authoring Clean, Multi-Stage Dockerfiles
+[video, width=800, height=450]
+video::v6-2-containerizing-automation.mp4[poster=v6-2-poster.png, captions=v6-2-captions.vtt]
+
+image::ch06/g6-2-docker-architecture-layers.png[Docker Architecture and Image Layering Model]
+
+image::ch06/g6-3-container-networking-ports.png[Docker Container Networking and Port Forwarding (-p 8080:5000)]
+
+=== Sample Multi-Stage Dockerfile
+[source,dockerfile]
+----
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY src/ ./src/
+EXPOSE 5000
+CMD ["python", "src/main.py"]
+----
+
+== 6.4 Continuous Integration (CI) Pipelines
+
+CI pipelines automatically build code and run unit tests on every Git push, preventing defective scripts from reaching production.
+
+.Video 6.3: Automating Quality: Building a Continuous Integration (CI) Pipeline with GitHub Actions
+[video, width=800, height=450]
+video::v6-3-ci-pipeline-actions.mp4[poster=v6-3-poster.png, captions=v6-3-captions.vtt]
+
+image::ch06/g6-4-ci-pipeline-architecture.png[Continuous Integration Pipeline Architecture]
+
+[source,yaml]
+----
+name: Network Automation CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests
+----
+
+== 6.5 Securing Network Applications & Protecting Data
+
+.Video 6.4: Securing Network Applications: Secrets Management and Defending the OWASP Top 10
+[video, width=800, height=450]
+video::v6-4-secrets-and-owasp.mp4[poster=v6-4-poster.png, captions=v6-4-captions.vtt]
+
+image::ch06/g6-5-secrets-management-pipeline.png[Secrets Management Pipeline: Local .env to CI Vault to Runtime]
+
+image::ch06/g6-6-owasp-top-10-network-threats.png[OWASP Top 10 Threats for Network Automation Services]
+
+=== Defending Against Command Injection
+Avoid passing unsanitized user strings directly into system shells:
+[source,python]
+----
+# INSECURE: Vulnerable to command injection
+import os
+os.system(f"ping -c 1 {user_ip}")
+
+# SECURE: Parameterized execution without shell expansion
+import subprocess
+subprocess.run(["ping", "-c", "1", user_ip], check=True)
+----
+
+== 6.6 Hands-On Connection: Docker & CI Labs
+
+* **Lab 6.2.7:** Writing a Dockerfile, building an image, running a container with port mapping, and inspecting logs.
+* **Lab 6.3.6:** Setting up an automated CI workflow that runs unit tests on new commits.
+
+== 6.7 Assessment Preparation: Project Milestone 4
+
+* **Milestone 4 Deliverables:**
+  1. Valid, optimized `Dockerfile` for the Network Change Automation service.
+  2. Passing CI pipeline configuration and execution log demonstrating successful automated test execution.
+  3. Documented security review verifying zero hardcoded credentials and safe parameter execution.
+* **Module 6 Exam:** Deployment models, Docker, CI/CD pipelines, and OWASP security threats.
+
+== 6.8 Key Terms
+
+container:: A standardized, standalone unit of software packaging code and all dependencies.
+Continuous Integration (CI):: The practice of automating the building and testing of code every time a team member commits changes to version control.
+command injection:: An attack where arbitrary commands are executed on the host operating system via an insecure application input.
+
+== 6.9 Chapter Summary
+
+This chapter explored containerization, automated continuous integration, and application security. In xref:ch07-infrastructure-as-code-ansible-validation.adoc[Chapter 7], you will scale your automation across network fleets using Ansible playbooks and automated device verification.

@@ -1,0 +1,129 @@
+= Chapter 4: REST APIs and Secure Network Integration
+
+== Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+. Differentiate REST, RPC, SOAP, and Webhook architectural communication models.
+. Formulate valid HTTP requests using correct methods (GET, POST, PUT, PATCH, DELETE), headers, query parameters, and JSON payloads.
+. Diagnose and resolve failed API transactions by interpreting HTTP response status codes (2xx, 3xx, 4xx, 5xx) and error headers.
+. Implement secure authentication mechanisms—including HTTP Basic Auth, Bearer Tokens, API Keys, and OAuth 2.0 flows.
+. Develop robust Python clients using the `requests` library that manage authentication, handle pagination, catch network exceptions, and protect secrets.
+
+== 4.1 Introduction: The API Economy Meets the Campus Network
+
+A university campus must provision 500 guest Wi-Fi access points across student residence halls before orientation weekend. Configuring each access point manually via SSH console takes 15 minutes per device. Meanwhile, the university's cloud-managed network controller exposes a REST API capable of provisioning all 500 access points programmatically in under one minute.
+
+Modern network management relies on RESTful APIs for scalable, machine-to-machine orchestration.
+
+.Video 4.1: REST vs. RPC vs. Webhooks: Choosing the Right API Architecture
+[video, width=800, height=450]
+video::v4-1-api-architectures.mp4[poster=v4-1-poster.png, captions=v4-1-captions.vtt]
+
+Here is the roadmap for Chapter 4:
+
+* **Section 4.2** compares REST, RPC, and Webhook communication architectures.
+* **Section 4.3** dissects the anatomy of an HTTP request and response.
+* **Section 4.4** surveys authentication models: Basic Auth, API Keys, Bearer Tokens, and OAuth 2.0.
+* **Section 4.5** explores interactive API testing using Postman collections and automated tests.
+* **Section 4.6** builds a production-grade Python API client using `requests`.
+* **Sections 4.7 and 4.8** connect directly to the Meraki API lab and Project Milestone 3.
+
+== 4.2 Architectural Paradigms: REST, RPC, and Webhooks
+
+image::ch04/g4-1-api-architecture-comparison.png[Comparison of REST, RPC, SOAP, and Webhooks]
+
+* **REST (Representational State Transfer):** Resource-based (`GET /api/v1/devices`), stateless, cacheable, uniform interface.
+* **RPC (Remote Procedure Call):** Action-based (`POST /rebootRouter`), tightly coupled functions.
+* **Webhooks:** Inverted event-driven architecture; servers push notifications via HTTP POST to a listener when an event occurs.
+
+== 4.3 The Anatomy of an HTTP Transaction
+
+.Video 4.2: Deconstructing the HTTP Transaction: Methods, Headers, and Status Code Diagnostics
+[video, width=800, height=450]
+video::v4-2-http-transaction-anatomy.mp4[poster=v4-2-poster.png, captions=v4-2-captions.vtt]
+
+image::ch04/g4-2-http-transaction-anatomy.png[Anatomy of an HTTP Request and Response]
+
+image::ch04/g4-3-http-status-codes-tree.png[HTTP Status Code Diagnostic Decision Tree]
+
+=== HTTP Verbs & Status Codes
+* **GET (200 OK):** Read resource state idempotently.
+* **POST (201 Created):** Create a new resource.
+* **PUT (200/204):** Completely replace an existing resource.
+* **PATCH (200 OK):** Partially update specific fields.
+* **DELETE (204 No Content):** Remove a resource.
+* **401 Unauthorized vs 403 Forbidden:** 401 indicates missing or invalid credentials; 403 indicates authenticated credentials lack necessary permissions.
+* **429 Too Many Requests:** Server rate limit exceeded; inspect `Retry-After` header.
+
+== 4.4 API Authentication and Token Management
+
+image::ch04/g4-4-authentication-mechanisms.png[API Authentication Spectrum: Basic Auth to OAuth 2.0]
+
+Never hardcode credentials in source code. Load tokens dynamically from environment variables:
+[source,python]
+----
+import os
+
+API_KEY = os.environ.get("CISCO_API_KEY")
+if not API_KEY:
+    raise ValueError("Missing CISCO_API_KEY environment variable")
+----
+
+== 4.5 Interactive API Testing with Postman
+
+Postman allows engineers to inspect API transactions, manage environment variables, and chain tokens before writing Python code.
+
+.Video 4.3: API Testing with Postman: Collections, Environments, and Automated Test Scripts
+[video, width=800, height=450]
+video::v4-3-postman-testing.mp4[poster=v4-3-poster.png, captions=v4-3-captions.vtt]
+
+image::ch04/g4-5-postman-environment-architecture.png[Postman Collections, Variables, and Automated Test Architecture]
+
+== 4.6 Developing a Robust Python API Client
+
+.Video 4.4: Building Resilient Python API Clients: Authentication, Pagination, and Exponential Backoff
+[video, width=800, height=450]
+video::v4-4-resilient-python-client.mp4[poster=v4-4-poster.png, captions=v4-4-captions.vtt]
+
+image::ch04/g4-6-python-requests-lifecycle.png[Python requests Client Execution Lifecycle and Error Handling]
+
+[source,python]
+----
+import os, time, requests
+
+def get_devices(network_id: str) -> list:
+    url = f"https://api.meraki.com/api/v1/networks/{network_id}/devices"
+    headers = {"X-Cisco-Meraki-API-Key": os.environ["MERAKI_KEY"], "Accept": "application/json"}
+    response = requests.get(url, headers=headers, timeout=10)
+    if response.status_code == 429:
+        wait = int(response.headers.get("Retry-After", 2))
+        time.sleep(wait)
+        return get_devices(network_id)
+    response.raise_for_status()
+    return response.json()
+----
+
+== 4.7 Hands-On Connection: Postman & Meraki API Labs
+
+* **Lab 4.3.4:** Using Postman to authenticate, inspect headers, and write response tests against an API server.
+* **Lab 4.4.2:** Writing a Python script using `requests` to list devices and clients from the Cisco Meraki Dashboard API.
+
+== 4.8 Assessment Preparation: Project Milestone 3
+
+* **Milestone 3 Deliverables:**
+  1. Executable Python API client interacting with target or mock endpoints.
+  2. Documented interface contract defining request parameters and JSON schemas.
+  3. Robust exception handling catching connection errors and rate limits.
+  4. Verified zero credentials committed to Git.
+* **Module 4 Exam:** REST principles, HTTP methods, status codes, and authentication.
+
+== 4.9 Key Terms
+
+REST:: Representational State Transfer; an architectural pattern relying on stateless, client-server communication over standard HTTP.
+Bearer Token:: A security token whose possession grants access to associated resources without further authentication.
+idempotent:: An operation that produces the same result whether executed once or repeatedly.
+
+== 4.10 Chapter Summary
+
+This chapter explored RESTful API architectures, HTTP transactions, token authentication, and Python client integration. In xref:ch05-network-fundamentals-troubleshooting.adoc[Chapter 5], you will explore the underlying switching, routing, and transport protocols that support these API transactions across enterprise networks.

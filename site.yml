@@ -1,0 +1,18 @@
+site:
+  title: Applied Network Programmability
+  url: https://frazier-at-cpcc.github.io/net226-oer
+  start_page: applied-network-programmability::index.adoc
+  keys:
+    copyright_year: '2026'
+
+content:
+  sources:
+    - url: .
+      branches: HEAD
+
+ui:
+  bundle:
+    url: ./ui/build/ui-bundle.zip
+
+output:
+  dir: ./build/site

@@ -1,0 +1,47 @@
+= Applied Network Programmability: Automating Cisco Infrastructure with Python, APIs, and NetDevOps
+
+*Author:* Dr. Frazier A. Smith, Central Piedmont Community College
+
+== About This Book
+
+_Applied Network Programmability: Automating Cisco Infrastructure with Python, APIs, and NetDevOps_ is an Open Educational Resource (OER) textbook designed for students pursuing practical, enterprise-grade competency in network automation, infrastructure as code, and modern software-defined networking. The book is aligned to the Cisco Certified DevNet Associate (200-901 DEVASC) certification and Quality Matters 7th Edition Higher Education standards, covering the full breadth of modern network programmability—from foundational Linux environments and Python data structures to RESTful APIs, containerized microservices, Ansible orchestration, and model-driven telemetry using YANG, NETCONF, and RESTCONF.
+
+This textbook takes a hands-on, applied approach. Rather than treating network programmability in the abstract, every chapter grounds its content in authentic enterprise scenarios, connects directly to the NETLAB+ DEVASC Workstation environment and Cisco DevNet Sandboxes, and embeds bespoke instructional video explainers, screencasts, and packet walkthroughs. Students apply their learning incrementally across an 8-week authentic individual capstone: the *Network Change Automation Project*.
+
+The book follows an 8-chapter sequence spanning eight weeks of instruction:
+
+== Table of Contents
+
+[cols="1,3",options="header"]
+|===
+| Chapter | Description
+
+| xref:ch01-foundations-environment-linux-python.adoc[1. Foundations: Environment, Linux & Python]
+| Developer workstation architecture (VS Code, virtual environments), Linux systems navigation and POSIX permissions, and defensive Python scripting foundations.
+
+| xref:ch02-devnet-ecosystem-and-project-scoping.adoc[2. DevNet Ecosystem & Project Scoping]
+| Navigating Cisco DevNet resources, Always-On vs. Reservable Sandboxes, evaluating third-party code, and agile backlog engineering for the Network Change Automation project.
+
+| xref:ch03-software-design-git-data-formats-tdd.adoc[3. Software Design, Git, Data Formats & TDD]
+| Software design patterns (MVC), professional Git workflows and pull requests, data serialization (JSON, YAML, XML), and Test-Driven Development with Python .
+
+| xref:ch04-rest-apis-and-secure-integration.adoc[4. REST APIs & Secure Network Integration]
+| REST architectural constraints, HTTP transactions and status codes, authentication schemes (Basic, API Keys, Bearer, OAuth 2.0), Postman testing, and resilient Python  clients.
+
+| xref:ch05-network-fundamentals-troubleshooting.adoc[5. Network Fundamentals & Application Diagnostics]
+| End-to-end packet tracing, Layer 2 switching, Layer 3 routing, Layer 4 TCP/UDP transport, edge services (firewalls, NAT, load balancers), planes separation, and network constraints.
+
+| xref:ch06-application-deployment-cicd-security.adoc[6. Container Deployment, CI/CD & Security]
+| Application deployment models, Docker containerization, multi-stage Dockerfiles, automated Continuous Integration (CI) pipelines with GitHub Actions, secrets management, and OWASP Top 10 defenses.
+
+| xref:ch07-infrastructure-as-code-ansible-validation.adoc[7. Infrastructure as Code with Ansible]
+| Infrastructure as Code principles, agentless configuration management, idempotent Ansible playbooks with the  collection, Jinja2 templating, and automated state verification with pyATS/Genie.
+
+| xref:ch08-model-driven-programmability-capstone.adoc[8. Model-Driven Programmability & Capstone]
+| Model-driven programmability stack, YANG data modeling, NETCONF over SSH (), RESTCONF over HTTPS, Cisco Catalyst Center APIs, Webex ChatOps bots, and Capstone Demonstration defense.
+
+|===
+
+== License
+
+This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0). It is an Open Educational Resource developed for NET-226: Network Programmability at Central Piedmont Community College.

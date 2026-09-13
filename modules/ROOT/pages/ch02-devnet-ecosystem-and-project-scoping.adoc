@@ -1,0 +1,117 @@
+= Chapter 2: The DevNet Ecosystem: Developer Resources, Sandboxes, and Project Scoping
+
+== Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+. Navigate the Cisco DevNet portal (`developer.cisco.com`) to locate authoritative API documentation, SDKs, and code repositories.
+. Differentiate between Always-On and Reservable DevNet Sandboxes based on tenancy, topology access, and administrative privileges.
+. Audit third-party code samples and API documentation for authority, currency, deprecation notices, and credential security.
+. Deconstruct an authentic enterprise network change scenario into measurable user stories and a prioritized product backlog.
+
+== 2.1 Introduction: Escaping the Vendor Documentation Maze
+
+Enterprise network engineers are often tasked with automating unfamiliar hardware under tight deadlines. Searching search engines or forum posts for automation snippets frequently yields outdated code written against deprecated API endpoints or containing insecure credential handling.
+
+To build reliable automation, engineers must rely on vendor-authoritative resources, interactive API explorers, and dedicated hardware sandboxes. Cisco DevNet provides a comprehensive ecosystem of learning labs, code exchanges, and live sandbox topologies to prototype solutions safely.
+
+.Video 2.1: Navigating Cisco DevNet: Learning Labs, Code Exchange, and API Docs
+[video, width=800, height=450]
+video::v2-1-devnet-portal.mp4[poster=v2-1-poster.png, captions=v2-1-captions.vtt]
+
+Here is the roadmap for Chapter 2:
+
+* **Section 2.2** surveys the four pillars of the Cisco DevNet developer platform.
+* **Section 2.3** compares Always-On and Reservable DevNet sandboxes and examines VPN topology connections.
+* **Section 2.4** establishes an audit framework for vetting open-source scripts and API versions.
+* **Section 2.5** introduces the 'Campus-A' customer scenario and guides the authoring of your Agile project backlog.
+* **Sections 2.6 and 2.7** bridge directly to the DevNet documentation hunt and Project Milestone 1.
+
+== 2.2 The Cisco DevNet Ecosystem Architecture
+
+Cisco DevNet (`developer.cisco.com`) is Cisco's unified platform for developer tools, APIs, software development kits, and community learning.
+
+image::ch02/g2-1-devnet-four-pillars.png[The Four Core Pillars of Cisco DevNet]
+
+DevNet is organized around four core services:
+1. **Learning Labs:** Modular, hands-on tutorials covering Python, REST APIs, and platform SDKs.
+2. **DevNet Sandboxes:** Free, cloud-hosted lab environments spanning physical and virtual network infrastructure.
+3. **DevNet Code Exchange:** A curated, Cisco-vetted directory of open-source automation scripts and repositories.
+4. **Community & Support:** Discussion forums, Webex developer spaces, and technical support tickets.
+
+== 2.3 DevNet Sandboxes: Always-On vs. Reservable
+
+Testing automation scripts against production routers can cause outages. DevNet Sandboxes provide safe environments to test code before deployment.
+
+.Video 2.2: Sandboxes Demystified: Always-On vs. Reservable VPN Topologies
+[video, width=800, height=450]
+video::v2-2-sandboxes-demystified.mp4[poster=v2-2-poster.png, captions=v2-2-captions.vtt]
+
+image::ch02/g2-2-sandbox-taxonomy.png[Always-On vs Reservable DevNet Sandboxes]
+
+* **Always-On Sandboxes:** Multi-tenant environments accessible 24/7 over public HTTPS. Ideal for quick API queries (GET requests) and learning API structure without VPN setup.
+* **Reservable Sandboxes:** Dedicated, private virtual network topologies scheduled for dedicated time blocks. Access is provided via AnyConnect VPN, granting full administrative privileges and persistent write access.
+
+image::ch02/g2-3-reservable-vpn-topology.png[Connecting to a Reservable DevNet Sandbox via AnyConnect VPN]
+
+== 2.4 Evaluating Developer Resources for Currency and Security
+
+Before importing third-party automation code into your enterprise repository, run a structured audit.
+
+.Video 2.3: Evaluating Third-Party Code: Currency, Security, and Deprecation Audits
+[video, width=800, height=450]
+video::v2-3-resource-evaluation.mp4[poster=v2-3-poster.png, captions=v2-3-captions.vtt]
+
+image::ch02/g2-4-resource-evaluation-flowchart.png[Third-Party Code Evaluation Flowchart]
+
+=== Security Red Flags in Automation Scripts
+* **Hardcoded Credentials:** Storing plain-text API keys or passwords in scripts committed to source control.
+* **Disabled TLS Validation:** Setting `verify=False` in Python `requests`, exposing network transactions to man-in-the-middle attacks.
+* **Deprecated Endpoints:** Utilizing API versions marked for retirement (e.g., using `/api/v1/` when `/api/v2/` is the active standard).
+
+== 2.5 Scoping the Automation Project: The Campus-A Challenge
+
+Your semester project simulates an authentic enterprise automation initiative for a regional organization called **Campus-A**.
+
+.Video 2.4: Scoping the Automation Project: User Stories, Acceptance Criteria, and Backlogs
+[video, width=800, height=450]
+video::v2-4-project-scoping.mp4[poster=v2-4-poster.png, captions=v2-4-captions.vtt]
+
+image::ch02/g2-5-campus-a-project-topology.png[Campus-A Enterprise Network Architecture]
+
+image::ch02/g2-6-project-milestone-lifecycle.png[Network Change Automation 8-Week Project Lifecycle]
+
+=== User Stories and Acceptance Criteria
+
+You will deconstruct the customer requirements into Agile user stories:
+* *User Story:* "As a network operations engineer, I want an automated Python audit tool to verify VLAN configurations across campus distribution switches so that manual errors are eliminated during maintenance windows."
+* *Acceptance Criteria:*
+  * Given a list of target switch IP addresses in YAML format.
+  * When the audit script executes against the target devices.
+  * Then it verifies VLAN 10, 20, and 99 exist and returns a structured JSON summary report.
+
+== 2.6 Hands-On Connection: DevNet Documentation Hunt
+
+* **Step 1:** Access `developer.cisco.com` and locate the API reference for Cisco Catalyst Center (DNA Center).
+* **Step 2:** Inspect the `/dna/intent/api/v1/network-device` endpoint and document required headers and sample response payloads.
+* **Step 3:** Reserve an IOS XE CSR1000v sandbox slot and verify reachability to `10.10.20.48`.
+
+== 2.7 Assessment Preparation: Project Milestone 1
+
+* **Project Milestone 1 Deliverable:**
+  1. Problem Statement & Automation Justification.
+  2. Minimum 3 functional user stories with explicit "Given-When-Then" acceptance criteria.
+  3. Dependency matrix identifying required API endpoints, mock fallbacks, and credentials.
+  4. Initial project backlog mapped across Weeks 3 through 8.
+* **Module 2 Exam:** Assessing DevNet portal services, sandboxes, and developer documentation navigation.
+
+== 2.8 Key Terms
+
+Always-On Sandbox:: A shared, public cloud lab environment providing immediate, read-only API access without scheduling.
+Reservable Sandbox:: A private, isolated network pod scheduled on-demand and accessed via AnyConnect VPN with administrative rights.
+user story:: A short, simple requirement written from the perspective of an end user specifying what they need and why.
+acceptance criteria:: Measurable, verifiable conditions that a software component must satisfy to be deemed complete.
+
+== 2.9 Chapter Summary
+
+This chapter explored the Cisco DevNet ecosystem, contrasting Always-On and Reservable sandboxes and establishing an audit workflow for developer resources. You also launched your semester capstone project by deconstructing the Campus-A requirements into user stories and a prioritized backlog. In xref:ch03-software-design-git-data-formats-tdd.adoc[Chapter 3], you will begin implementing your automation service using software design patterns, Git version control, structured data formats, and automated unit tests.

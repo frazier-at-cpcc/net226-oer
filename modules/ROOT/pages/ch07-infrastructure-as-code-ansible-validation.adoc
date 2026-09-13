@@ -1,0 +1,126 @@
+= Chapter 7: Infrastructure as Code: Ansible Automation and Device Validation
+
+== Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+. Compare configuration management architectures (Ansible, Puppet, Chef, SaltStack), differentiating agentless vs agent-based operational models.
+. Install and configure an Ansible control node, defining structured inventory files, host variables, and group variables.
+. Author and execute idempotent Ansible playbooks utilizing standard network modules (`cisco.ios.ios_command`, `cisco.ios.ios_config`) and Jinja2 templating.
+. Implement automated network state verification frameworks (pyATS and Genie) to evaluate device configurations before and after change execution.
+. Formulate robust change management plans incorporating pre-checks, post-checks, automated rollbacks, and audit logging.
+
+== 7.1 Introduction: The 2:00 AM Configuration Nightmare
+
+A banking enterprise requires a critical QoS and VLAN update across 450 branch routers before morning opening. Six engineers divide spreadsheets and enter changes via SSH. By 4:00 AM, four routers fail to accept commands due to syntax variances, three routers are partially configured and drop traffic, and nobody knows which devices match the intended policy.
+
+Infrastructure as Code (IaC) eliminates configuration drift by treating network configurations as version-controlled code, enforced through idempotent automation engines.
+
+.Video 7.1: Infrastructure as Code: Idempotency, Desired State, and Configuration Drift
+[video, width=800, height=450]
+video::v7-1-iac-idempotency.mp4[poster=v7-1-poster.png, captions=v7-1-captions.vtt]
+
+Here is the roadmap for Chapter 7:
+
+* **Section 7.2** explores Infrastructure as Code and the principle of idempotency.
+* **Section 7.3 and 7.4** cover Ansible architecture, control nodes, and YAML inventory management.
+* **Section 7.5** guides the authoring of idempotent network playbooks with `cisco.ios`.
+* **Section 7.6** implements automated network state verification using pyATS and Genie.
+* **Section 7.7** designs change control plans with automated rollbacks.
+* **Sections 7.8 and 7.9** connect directly to Ansible labs and Project Milestone 5.
+
+== 7.2 The Philosophy of Infrastructure as Code
+
+image::ch07/g7-1-iac-idempotency-loop.png[Infrastructure as Code Idempotency and Reconciliation Loop]
+
+* **Idempotency:** Executing a configuration task once applies the required changes; executing it again produces zero changes and zero errors.
+* **Configuration Drift:** The gradual divergence of live network configurations from intended baselines due to unrecorded manual edits.
+
+== 7.3 Ansible Architecture and Inventory Management
+
+.Video 7.2: Ansible Architecture: Control Nodes, Dynamic Inventories, and SSH Network CLI
+[video, width=800, height=450]
+video::v7-2-ansible-architecture.mp4[poster=v7-2-poster.png, captions=v7-2-captions.vtt]
+
+image::ch07/g7-2-agentless-vs-agent-architecture.png[Agentless (Ansible) vs Agent-Based (Puppet/Chef) Architecture]
+
+image::ch07/g7-3-ansible-topology-inventory.png[Ansible Control Node and Network Inventory Topology]
+
+=== Defining YAML Inventory (`hosts.yml`)
+[source,yaml]
+----
+all:
+  children:
+    routers:
+      hosts:
+        csr1:
+          ansible_host: 10.10.20.48
+      vars:
+        ansible_network_os: cisco.ios.ios
+        ansible_connection: network_cli
+        ansible_user: developer
+----
+
+== 7.4 Authoring Network Playbooks
+
+.Video 7.3: Authoring Idempotent Network Playbooks with the cisco.ios Collection
+[video, width=800, height=450]
+video::v7-3-cisco-ios-playbooks.mp4[poster=v7-3-poster.png, captions=v7-3-captions.vtt]
+
+image::ch07/g7-4-ansible-playbook-anatomy.png[Anatomy of an Ansible Network Playbook]
+
+image::ch07/g7-5-jinja2-templating-flow.png[Jinja2 Dynamic Configuration Templating Workflow]
+
+[source,yaml]
+----
+- name: Configure Campus Switch VLANs
+  hosts: switches
+  gather_facts: no
+  tasks:
+    - name: Ensure VLAN 100 Exists
+      cisco.ios.ios_config:
+        lines:
+          - name USERS
+        parents: vlan 100
+----
+
+== 7.5 Automated State Verification with pyATS and Genie
+
+.Video 7.4: Automated State Verification: Snapshot Testing and Diffs with pyATS and Genie
+[video, width=800, height=450]
+video::v7-4-pyats-verification.mp4[poster=v7-4-poster.png, captions=v7-4-captions.vtt]
+
+image::ch07/g7-6-pyats-verification-workflow.png[pyATS and Genie Automated Snapshot and Diff Workflow]
+
+image::ch07/g7-7-change-management-rollback-flow.png[Enterprise Change Management and Automated Rollback Workflow]
+
+pyATS transforms unstructured CLI command text into structured Python dictionaries, enabling automated assertions before and after changes:
+[source,bash]
+----
+# Diff device state before and after change execution
+genie diff pre_snapshot post_snapshot
+----
+
+== 7.6 Hands-On Connection: Ansible & pyATS Labs
+
+* **Lab 7.4.4:** Configuring an Ansible inventory, executing ad-hoc commands, and running playbooks against Cisco IOS targets.
+* **Lab 7.5.3:** Using pyATS and Genie to parse routing tables and interface statistics into JSON.
+
+== 7.7 Assessment Preparation: Project Milestone 5
+
+* **Milestone 5 Deliverables:**
+  1. Executable Ansible playbook applying idempotent changes to the target router.
+  2. Automated verification assertions confirming interface operational state.
+  3. Documented rollback procedure restoring checkpointed running config upon failure.
+  4. Execution evidence showing `changed: 0` on second run.
+* **Module 7 Exam:** IaC principles, Ansible playbooks, network modules, and test frameworks.
+
+== 7.8 Key Terms
+
+idempotent:: A quality of an operation that guarantees the same system state whether applied once or multiple times.
+Ansible Control Node:: The system hosting Ansible from which automation tasks and playbooks are executed against managed inventory.
+pyATS:: Cisco's Python Automated Test System; a test framework used to validate device state through structured parsing.
+
+== 7.9 Chapter Summary
+
+This chapter explored Infrastructure as Code, agentless configuration management with Ansible, and automated state verification with pyATS. In xref:ch08-model-driven-programmability-capstone.adoc[Chapter 8], you will master model-driven programmability (YANG, NETCONF, RESTCONF) and deliver your final capstone demonstration.

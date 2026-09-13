@@ -1,0 +1,124 @@
+= Chapter 8: Model-Driven Programmability, Controller APIs, and Capstone Demonstration
+
+== Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+. Interpret YANG data models (RFC 6020 / RFC 7950) to differentiate configuration (`rw`) from operational state (`ro`), reading tree diagrams and schema hierarchies.
+. Formulate and execute NETCONF RPC operations using Python `ncclient` over SSH (port 830) to retrieve and modify device state.
+. Formulate and execute RESTCONF HTTP requests using Python `requests` with `application/yang-data+json` media types.
+. Interact with centralized controller APIs (Cisco Catalyst Center / DNA Center) and collaboration platforms (Webex Teams) to implement end-to-end automation workflows.
+. Deliver and defend a professional demonstration of the complete *Network Change Automation* service incorporating version control, CI/CD, containerization, and idempotent device modification.
+
+== 8.1 Introduction: Beyond the Human Interface
+
+Parsing human-readable console text via screen-scraping breaks whenever firmware updates adjust whitespace or punctuation. True network programmability separates the data model from the transport protocol, allowing software to query and configure network devices with mathematical precision.
+
+Model-Driven Programmability uses standardized YANG schemas, NETCONF over SSH, and RESTCONF over HTTPS to manage devices programmatically.
+
+.Video 8.1: Why CLI Scraping Fails: The Power of Model-Driven Programmability and YANG
+[video, width=800, height=450]
+video::v8-1-model-driven-yang.mp4[poster=v8-1-poster.png, captions=v8-1-captions.vtt]
+
+Here is the roadmap for Chapter 8:
+
+* **Section 8.2** explores YANG data modeling schemas and tree structures.
+* **Section 8.3** implements NETCONF XML operations using Python `ncclient`.
+* **Section 8.4** automates device configuration using RESTCONF and JSON.
+* **Section 8.5 and 8.6** examine Cisco Catalyst Center APIs and Webex Teams ChatOps bots.
+* **Section 8.7 and 8.8** bridge to live model-driven labs, the Skills Assessment, and Capstone Demonstration.
+
+== 8.2 YANG Data Modeling: The Schema of the Network
+
+image::ch08/g8-1-model-driven-stack.png[Model-Driven Programmability Stack: Transport, Protocol, Model, and Encoding]
+
+image::ch08/g8-2-yang-tree-hierarchy.png[YANG Model Tree Hierarchy: Containers, Lists, Leaves, and State Data]
+
+YANG defines the data structure for devices:
+* `leaf`: Single value (e.g., interface name).
+* `container`: Grouping of related nodes.
+* `list`: Collection of entries identified by a unique key.
+* `config true` vs `config false`: Distinguishes configurable settings (`rw`) from read-only operational telemetry (`ro`).
+
+== 8.3 NETCONF: Network Configuration Protocol
+
+.Video 8.2: NETCONF in Action: Executing XML RPCs with Python and ncclient
+[video, width=800, height=450]
+video::v8-2-netconf-ncclient.mp4[poster=v8-2-poster.png, captions=v8-2-captions.vtt]
+
+image::ch08/g8-3-netconf-architecture-rpc.png[NETCONF Protocol Architecture: SSH Port 830, RPCs, and XML Filters]
+
+[source,python]
+----
+from ncclient import manager
+
+router = {
+    "host": "10.10.20.48", "port": 830,
+    "username": "developer", "password": "CiscoPassword123!",
+    "hostkey_verify": False
+}
+
+netconf_filter = """
+<filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"/>
+</filter>
+"""
+
+with manager.connect(**router) as m:
+    response = m.get_config(source="running", filter=netconf_filter)
+    print(response.xml)
+----
+
+== 8.4 RESTCONF: RESTful Model-Driven Management
+
+.Video 8.3: RESTCONF in Practice: Managing IOS-XE Devices with HTTP and yang-data+json
+[video, width=800, height=450]
+video::v8-3-restconf-practice.mp4[poster=v8-3-poster.png, captions=v8-3-captions.vtt]
+
+image::ch08/g8-4-restconf-uri-mapping.png[RESTCONF URI Path Mapping and HTTP Verbs]
+
+RESTCONF exposes YANG models over HTTPS using standard HTTP verbs and JSON formatting:
+[source,python]
+----
+import requests
+
+url = "https://10.10.20.48/restconf/data/ietf-interfaces:interfaces"
+headers = {"Accept": "application/yang-data+json"}
+response = requests.get(url, headers=headers, auth=("developer", "CiscoPassword123!"), verify=False)
+print(response.json())
+----
+
+== 8.5 Controller APIs and ChatOps Collaboration
+
+.Video 8.4: ChatOps and Controller APIs: Building a Webex Bot for Network Alerting
+[video, width=800, height=450]
+video::v8-4-chatops-webex-bot.mp4[poster=v8-4-poster.png, captions=v8-4-captions.vtt]
+
+image::ch08/g8-5-catalyst-center-architecture.png[Centralized SDN Controller Architecture: Cisco Catalyst Center]
+
+image::ch08/g8-6-webex-chatops-flow.png[ChatOps Event Alerting Flow via Webex Teams Bot]
+
+image::ch08/g8-7-capstone-solution-architecture.png[Complete Network Change Automation Capstone Solution Architecture]
+
+== 8.6 Hands-On Connection: NETCONF, RESTCONF & Webex Labs
+
+* **Lab 8.3.6:** Developing Python scripts with `ncclient` to retrieve interface state via NETCONF, followed by identical operations using RESTCONF.
+* **Lab 8.4.5:** Creating a Webex bot and writing a Python script that posts automated audit alerts to an operations room.
+
+== 8.7 Capstone Project Demonstration & Skills Assessment
+
+* **Deliverables:**
+  1. **Individual Skills Assessment:** Submit an automated Python bot script that queries network status and posts formatted Markdown alerts to Webex.
+  2. **Capstone Demonstration Packet:** An asynchronous video or terminal walkthrough presenting the complete Network Change Automation service: Git history, CI pipeline execution, Docker container, and idempotent Ansible deployment.
+  3. **Module 8 Exam & Final Exam.**
+
+== 8.8 Key Terms
+
+YANG:: Yet Another Next Generation; a data modeling language used to define configuration and state data for network devices.
+NETCONF:: Network Configuration Protocol; an IETF protocol operating over SSH port 830 using XML RPCs to manage configurations.
+RESTCONF:: An IETF protocol operating over HTTPS using standard HTTP verbs and JSON/XML payloads to access YANG-modeled data.
+ChatOps:: An operational model that connects people, tools, process, and automation into a transparent workflow mediated by chat platforms.
+
+== 8.9 Chapter Summary
+
+Congratulations on completing *Applied Network Programmability*. You have progressed from developer workstation setup and Linux basics to REST APIs, containerized CI/CD pipelines, Ansible automation, and model-driven device programmability. You are now prepared to achieve the Cisco Certified DevNet Associate (200-901 DEVASC) certification and lead network automation initiatives in enterprise environments.

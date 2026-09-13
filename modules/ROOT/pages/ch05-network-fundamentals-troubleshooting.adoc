@@ -1,0 +1,114 @@
+= Chapter 5: Network Fundamentals and Application Flow Troubleshooting
+
+== Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+. Trace Layer 2 switching frames (MAC learning, VLAN segmentation, 802.1Q trunking) and Layer 3 packet forwarding paths (IP routing, ARP resolution, longest-prefix matching).
+. Differentiate Layer 4 transport behaviors (TCP connection handshakes vs UDP connectionless streams) and identify standard automation port values.
+. Diagnose the operational impact of core network services (DNS, DHCP, NTP) and edge devices (Firewalls, Load Balancers, NAT) on application traffic.
+. Distinguish between the Management, Control, and Data planes of a modern network architecture.
+. Identify and quantify the impacts of physical and logical network constraints (bandwidth, latency, jitter, packet loss) on software execution.
+
+== 5.1 Introduction: When the Script Works Locally But Fails in Production
+
+An automation engineer tests a Python script locally on their workstation and it completes in 1.5 seconds. When deployed to execute across an enterprise WAN, the script times out, drops API connections unpredictably, and fails with socket errors. The developer blames the network; the network engineer insists ping works.
+
+Automation scripts depend on switching, routing, stateful firewalls, DNS lookups, and TCP transport dynamics. Understanding end-to-end packet flow is essential for diagnosing distributed automation failures.
+
+.Video 5.1: Anatomy of an Application Flow: Tracing Packet Travel from Client to API Gateway
+[video, width=800, height=450]
+video::v5-1-app-flow-trace.mp4[poster=v5-1-poster.png, captions=v5-1-captions.vtt]
+
+Here is the roadmap for Chapter 5:
+
+* **Section 5.2 and 5.3** trace Layer 2 frame forwarding and Layer 3 packet routing.
+* **Section 5.4** explores Layer 4 TCP handshakes and critical automation port numbers.
+* **Section 5.5** evaluates edge services: firewalls, NAT, load balancers, and DNS/NTP.
+* **Section 5.6** contrasts Management, Control, and Data planes.
+* **Section 5.7** examines the impact of latency, jitter, and loss on automation scripts.
+* **Sections 5.8 and 5.9** connect directly to Packet Tracer flow analysis and the Network Dependency Checkpoint.
+
+== 5.2 Layer 2 Forwarding: Switching, MAC Tables, and VLANs
+
+.Video 5.2: Layer 2 vs. Layer 3 Forwarding: MAC Learning, VLANs, and Routing Table Lookups
+[video, width=800, height=450]
+video::v5-2-l2-l3-forwarding.mp4[poster=v5-2-poster.png, captions=v5-2-captions.vtt]
+
+image::ch05/g5-1-end-to-end-packet-trace.png[End-to-End Application Flow Across Network Layers]
+
+image::ch05/g5-2-switch-mac-learning-forwarding.png[Switch MAC Address Learning and Forwarding Logic]
+
+Switches inspect ingress frames, populate their MAC address table with source MACs, and forward frames based on destination MAC addresses. If a destination is unknown, the frame is flooded out all ports in the same VLAN.
+
+== 5.3 Layer 3 Forwarding: Routing, Subnets, and ARP
+
+image::ch05/g5-3-router-forwarding-longest-prefix.png[Router Forwarding Decision and Longest-Prefix Match]
+
+Routers decrement Time-to-Live (TTL), evaluate the destination IP against their routing table using **longest-prefix match**, resolve the next-hop MAC via ARP, and rewrite Layer 2 headers.
+
+== 5.4 Layer 4 Transport: TCP, UDP, and Port Allocation
+
+image::ch05/g5-4-tcp-three-way-handshake.png[TCP Three-Way Handshake and Connection Teardown]
+
+=== Critical Automation Port Numbers
+* **SSH (CLI):** TCP 22
+* **DNS:** UDP/TCP 53
+* **HTTP / HTTPS:** TCP 80 / 443
+* **NETCONF over SSH:** TCP 830
+* **NTP:** UDP 123
+
+== 5.5 Edge Devices: Firewalls, NAT, and Load Balancers
+
+.Video 5.3: The Impact of Edge Services: Firewalls, NAT, and Load Balancers on API Traffic
+[video, width=800, height=450]
+video::v5-3-edge-services-impact.mp4[poster=v5-3-poster.png, captions=v5-3-captions.vtt]
+
+image::ch05/g5-5-core-ip-services.png[Core IP Services Supporting Programmability: DNS, DHCP, NTP]
+
+image::ch05/g5-6-firewall-nat-loadbalancer.png[Operational Function of Stateful Firewalls, NAT, and Load Balancers]
+
+* **Stateful Firewalls:** Track connection state; permit outbound client requests and matching inbound replies while blocking unsolicited inbound connections.
+* **NAT / PAT:** Translates private RFC 1918 IPs to public IPs, requiring reverse proxy configurations for inbound webhooks.
+* **Load Balancers:** Terminate TLS and distribute API traffic across backend compute nodes.
+
+== 5.6 Management, Control, and Data Planes
+
+image::ch05/g5-7-network-planes-separation.png[Separation of Management, Control, and Data Planes]
+
+* **Data Plane:** High-speed ASIC hardware forwarding customer packets.
+* **Control Plane:** Routing protocols (OSPF, BGP) calculating path topologies.
+* **Management Plane:** Administrative access via SSH, SNMP, RESTCONF, and NETCONF.
+
+== 5.7 Network Constraints Impacting Applications
+
+.Video 5.4: Network Constraints in Practice: How Latency, Jitter, and Packet Loss Break Scripts
+[video, width=800, height=450]
+video::v5-4-network-constraints.mp4[poster=v5-4-poster.png, captions=v5-4-captions.vtt]
+
+image::ch05/g5-8-network-constraints-matrix.png[Matrix of Network Constraints and Application Mitigations]
+
+High round-trip time (RTT) and packet loss cause TCP window throttling, leading to HTTP request timeouts in un-tuned automation scripts.
+
+== 5.8 Hands-On Connection: Packet Tracer Flow Analysis
+
+* **Packet Tracer Activity 5.2.8:** Exploring network topologies, inspecting switch CAM tables, and observing ARP resolution.
+* **Lab 5.6.7:** Isolating connectivity faults between a Python client and an API endpoint across firewalls and subnets.
+
+== 5.9 Assessment Preparation: Project Checkpoint
+
+* **Project Checkpoint Deliverable:**
+  1. Documenting all network dependencies for the Network Change Automation service.
+  2. Failure-mode analysis: Predicting script behavior when port 443 or 830 is filtered, or when WAN latency exceeds 250ms.
+* **Module 5 Exam:** Layer 2/3 forwarding, TCP/UDP transport, network planes, and constraint impacts.
+
+== 5.10 Key Terms
+
+longest-prefix match:: Routing algorithm selecting the route entry with the most specific subnet mask matching the destination IP.
+three-way handshake:: The initial TCP exchange (SYN, SYN-ACK, ACK) establishing a reliable transport session.
+Control Plane:: Networking subsystem responsible for exchanging routing protocols and calculating path forwarding tables.
+Data Plane:: Hardware subsystem responsible for forwarding packets from ingress to egress interfaces at line rate.
+
+== 5.11 Chapter Summary
+
+This chapter examined the physical and logical networking layers that carry automation traffic. In xref:ch06-application-deployment-cicd-security.adoc[Chapter 6], you will package your automation services into lightweight Docker containers and build continuous integration pipelines.
